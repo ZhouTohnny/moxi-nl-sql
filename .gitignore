@@ -36,9 +36,7 @@ artifacts/
 *.sln.docstates
 
 # Config files with secrets
-appsettings.json
-!NL2SQL/appsettings.json
-!NL2SQL.GUI/appsettings.json
+**/appsettings.json
 
 # Runtime data
 sql_history.json
