@@ -8,17 +8,29 @@ namespace NL2SQL.Services;
 /// </summary>
 public class SqlGenerator
 {
-    private readonly DeepSeekClient _client;
+    private readonly ILLMClient _client;
     private readonly DatabaseDialect _dialect;
     private readonly string _systemPrompt;
+    private readonly string? _schema;
     private readonly List<(string Role, string Content)> _conversationHistory = new();
 
-    public SqlGenerator(DatabaseDialect dialect, string apiKey, string? schema = null)
+    public SqlGenerator(DatabaseDialect dialect, string apiKey, string? baseUrl = null, string? model = null, string? schema = null, string? apiType = null)
     {
         _dialect = dialect;
-        _client = new DeepSeekClient(apiKey);
+        _schema = schema;
+        _client = LLMClientFactory.Create(
+            apiType ?? "OpenAI",
+            apiKey,
+            baseUrl ?? "https://api.deepseek.com",
+            model ?? "deepseek-chat"
+        );
         _systemPrompt = BuildSystemPrompt(schema);
     }
+
+    /// <summary>
+    /// 获取当前表结构
+    /// </summary>
+    public string? GetSchema() => _schema;
 
     private string BuildSystemPrompt(string? schema)
     {

@@ -7,8 +7,15 @@ namespace NL2SQL.Models;
 /// </summary>
 public class AppConfig
 {
-    public DeepSeekConfig DeepSeek { get; set; } = new();
+    public List<ModelConfig> Models { get; set; } = new();
+    public string ActiveModel { get; set; } = "";
     public List<ConnectionConfig> Connections { get; set; } = new();
+
+    /// <summary>
+    /// 获取当前激活的模型配置
+    /// </summary>
+    public ModelConfig? GetActiveModel()
+        => Models.FirstOrDefault(m => m.Name == ActiveModel) ?? Models.FirstOrDefault();
 
     /// <summary>
     /// 从配置文件加载
@@ -39,41 +46,45 @@ public class AppConfig
     /// </summary>
     public ConnectionConfig? GetConnection(string name)
         => Connections.FirstOrDefault(c => c.Name == name);
-
-    /// <summary>
-    /// 获取指定方言的第一个连接
-    /// </summary>
-    public ConnectionConfig? GetFirstConnection(DatabaseDialect dialect)
-        => Connections.FirstOrDefault(c => c.Dialect == dialect.ToString());
 }
 
 /// <summary>
-/// DeepSeek API 配置
+/// 模型配置
 /// </summary>
-public class DeepSeekConfig
-{
-    public string ApiKey { get; set; } = "";
-    public string BaseUrl { get; set; } = "https://api.deepseek.com";
-    public string Model { get; set; } = "deepseek-chat";
-}
-
-/// <summary>
-/// 数据库连接配置（支持命名）
-/// </summary>
-public class ConnectionConfig
+public class ModelConfig
 {
     /// <summary>
-    /// 连接名称，如 "生产环境"、"测试库"
+    /// 模型名称（如 "DeepSeek"、"GPT-4o"）
     /// </summary>
     public string Name { get; set; } = "";
 
     /// <summary>
-    /// 数据库方言：MySQL, Oracle, SqlServer, PostgreSQL, SQLite
+    /// API 类型：OpenAI、Anthropic
     /// </summary>
-    public string Dialect { get; set; } = "";
+    public string ApiType { get; set; } = "OpenAI";
 
     /// <summary>
-    /// 连接字符串
+    /// API Key
     /// </summary>
+    public string ApiKey { get; set; } = "";
+
+    /// <summary>
+    /// API 地址
+    /// </summary>
+    public string BaseUrl { get; set; } = "https://api.deepseek.com";
+
+    /// <summary>
+    /// 模型名称（如 deepseek-chat、claude-3-5-sonnet）
+    /// </summary>
+    public string Model { get; set; } = "deepseek-chat";
+}
+
+/// <summary>
+/// 数据库连接配置
+/// </summary>
+public class ConnectionConfig
+{
+    public string Name { get; set; } = "";
+    public string Dialect { get; set; } = "";
     public string ConnectionString { get; set; } = "";
 }

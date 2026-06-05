@@ -33,6 +33,14 @@ public partial class MainWindow : Window
         try
         {
             _config = AppConfig.Load();
+
+            // 加载模型列表
+            cmbModel.ItemsSource = _config.Models;
+            var activeModel = _config.GetActiveModel();
+            if (activeModel != null)
+                cmbModel.SelectedItem = activeModel;
+
+            // 加载连接列表
             cmbConnection.ItemsSource = _config.Connections;
             if (_config.Connections.Count > 0)
                 cmbConnection.SelectedIndex = 0;
@@ -40,6 +48,19 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             MessageBox.Show($"加载配置文件失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void CmbModel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (cmbModel.SelectedItem is ModelConfig model)
+        {
+            _config.ActiveModel = model.Name;
+            // 如果已连接，需要重新创建 SqlGenerator
+            if (_generator != null && _currentConnection != null)
+            {
+                RecreateGenerator();
+            }
         }
     }
 
@@ -110,18 +131,14 @@ public partial class MainWindow : Window
             var schema = await reader.ReadSchemaAsync();
             _tables = _allTables;
 
-            var apiKey = _config.DeepSeek.ApiKey;
-            var envKey = Environment.GetEnvironmentVariable("DEEPSEEK_API_KEY");
-            if (!string.IsNullOrEmpty(envKey))
-                apiKey = envKey;
-
-            if (string.IsNullOrEmpty(apiKey))
+            var model = _config.GetActiveModel();
+            if (model == null || string.IsNullOrEmpty(model.ApiKey))
             {
-                MessageBox.Show("请在配置中设置 DeepSeek API Key。", "API Key 缺失", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("请先配置模型 API Key。", "配置缺失", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _generator = new SqlGenerator(dialect, apiKey, schema);
+            _generator = new SqlGenerator(dialect, model.ApiKey, model.BaseUrl, model.Model, schema, model.ApiType);
             _executor = new SqlExecutor(dialect, conn.ConnectionString) { MaxRows = _rowLimit };
             _currentConnection = conn;
 
@@ -145,6 +162,22 @@ public partial class MainWindow : Window
     private void UpdateTableList()
     {
         lstTables.ItemsSource = _tables.Select(t => new TableItem(t.TableName, t.Comment)).ToList();
+    }
+
+    /// <summary>
+    /// 重新创建 SqlGenerator（切换模型时调用）
+    /// </summary>
+    private void RecreateGenerator()
+    {
+        if (_currentConnection == null) return;
+
+        var model = _config.GetActiveModel();
+        if (model == null) return;
+
+        var dialect = Enum.Parse<DatabaseDialect>(_currentConnection.Dialect);
+        var schema = _generator?.GetSchema();
+
+        _generator = new SqlGenerator(dialect, model.ApiKey, model.BaseUrl, model.Model, schema, model.ApiType);
     }
 
     private void TxtTableSearch_GotFocus(object sender, RoutedEventArgs e)

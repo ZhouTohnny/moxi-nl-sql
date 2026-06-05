@@ -24,8 +24,12 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="NL2SQL" FontSize="18" FontWeight="Bold"
                                Foreground="#1976D2" VerticalAlignment="Center"/>
-                    <TextBlock Text="连接：" VerticalAlignment="Center" Margin="16,0,0,0"/>
-                    <ComboBox x:Name="cmbConnection" Height="30" Width="200" Margin="4,0"
+                    <TextBlock Text="模型：" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                    <ComboBox x:Name="cmbModel" Height="30" Width="120" Margin="4,0"
+                              DisplayMemberPath="Name"
+                              SelectionChanged="CmbModel_SelectionChanged"/>
+                    <TextBlock Text="连接：" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    <ComboBox x:Name="cmbConnection" Height="30" Width="180" Margin="4,0"
                               DisplayMemberPath="Name"
                               SelectionChanged="CmbConnection_SelectionChanged"/>
                     <TextBlock Text="状态：" VerticalAlignment="Center" Margin="8,0,0,0"/>
