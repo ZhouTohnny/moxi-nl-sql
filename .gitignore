@@ -1,0 +1,55 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.nupkg
+
+# Visual Studio
+.vs/
+*.rsuser
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# NuGet
+*.snupkg
+project.lock.json
+artifacts/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Config files with secrets
+appsettings.json
+!NL2SQL/appsettings.json
+!NL2SQL.GUI/appsettings.json
+
+# Runtime data
+sql_history.json
+saved_sql.json
+*.db
+*.log
+
+# Claude
+.claude/
+
+# Test files
+TestConn.csx
+TestOracle.csx
+

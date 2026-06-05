@@ -1,0 +1,51 @@
+<Window x:Class="NL2SQL.GUI.SaveSqlDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="保存常用 SQL" Height="250" Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F5F5F5">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="💾 保存为常用 SQL" FontSize="16" FontWeight="SemiBold" Foreground="#1976D2"
+                   Margin="0,0,0,12"/>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="12"
+                BorderBrush="#E0E0E0" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="名称：" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtName" FontSize="13" Padding="4"
+                         BorderBrush="#E0E0E0" BorderThickness="1"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="分类：" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbCategory" Height="28" IsEditable="True"
+                          FontSize="13"/>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="保存" Click="BtnSave_Click" Width="80" Height="32"
+                    Background="#4CAF50" Foreground="White" BorderThickness="0"/>
+            <Button Content="取消" Click="BtnCancel_Click" Width="80" Height="32"
+                    Background="#9E9E9E" Foreground="White" BorderThickness="0" Margin="8,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

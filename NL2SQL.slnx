@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NL2SQL.GUI/NL2SQL.GUI.csproj" />
+  <Project Path="NL2SQL/NL2SQL.csproj" />
+</Solution>

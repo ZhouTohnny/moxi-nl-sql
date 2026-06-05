@@ -1,0 +1,151 @@
+<Window x:Class="NL2SQL.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NL2SQL - 自然语言转 SQL 工具" Height="650" Width="1050"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部导航栏 -->
+        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="White" CornerRadius="8" Padding="10,8"
+                BorderBrush="#E0E0E0" BorderThickness="1">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="NL2SQL" FontSize="18" FontWeight="Bold"
+                               Foreground="#1976D2" VerticalAlignment="Center"/>
+                    <TextBlock Text="连接：" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                    <ComboBox x:Name="cmbConnection" Height="30" Width="200" Margin="4,0"
+                              DisplayMemberPath="Name"
+                              SelectionChanged="CmbConnection_SelectionChanged"/>
+                    <TextBlock Text="状态：" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    <TextBlock x:Name="txtStatus" Text="未连接" Foreground="#F57C00"
+                               VerticalAlignment="Center" Margin="4,0,12,0"/>
+                    <Button Content="连接" x:Name="btnConnect" Click="BtnConnect_Click"
+                            Height="30" Padding="12,0" Background="#1976D2" Foreground="White" BorderThickness="0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="⭐ 常用" Click="BtnSavedSql_Click" Height="30" Padding="12,0"
+                            Background="#9C27B0" Foreground="White" BorderThickness="0" Margin="0,0,8,0"/>
+                    <Button Content="📜 历史" Click="BtnHistory_Click" Height="30" Padding="12,0"
+                            Background="#FF9800" Foreground="White" BorderThickness="0" Margin="0,0,8,0"/>
+                    <Button Content="⚙ 配置" Click="BtnSettings_Click" Height="30" Padding="12,0"
+                            Background="#607D8B" Foreground="White" BorderThickness="0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 左侧：表列表 -->
+        <Border Grid.Row="2" Grid.Column="0" Background="White" CornerRadius="8" Padding="8"
+                BorderBrush="#E0E0E0" BorderThickness="1">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="📋 数据表" FontWeight="SemiBold" Margin="4,4,4,4"/>
+                <Border DockPanel.Dock="Top" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Margin="0,0,0,6">
+                    <TextBox x:Name="txtTableSearch" FontSize="12" Padding="4,3"
+                             BorderThickness="0" Text="🔍 搜索表名..."
+                             Foreground="#9E9E9E"
+                             GotFocus="TxtTableSearch_GotFocus"
+                             LostFocus="TxtTableSearch_LostFocus"
+                             TextChanged="TxtTableSearch_TextChanged"/>
+                </Border>
+                <ListBox x:Name="lstTables" BorderThickness="0" Background="Transparent"
+                         SelectionChanged="LstTables_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="2" FontSize="12" Text="{Binding DisplayText}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- 右侧：输入 + 输出 -->
+        <Grid Grid.Row="2" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 输入区域 -->
+            <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="10"
+                    BorderBrush="#E0E0E0" BorderThickness="1">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="💬 输入自然语言" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <CheckBox x:Name="chkMultiTurn" Content="多轮对话" Margin="12,0,0,0"
+                                          VerticalAlignment="Center" FontSize="12" Foreground="#757575"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="(Ctrl+Enter)" Foreground="#9E9E9E" FontSize="11"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <Button Content="⚡ 生成 SQL" x:Name="btnGenerate" Click="BtnGenerate_Click"
+                                        Height="28" Padding="12,0" FontSize="12" FontWeight="SemiBold"
+                                        Background="#4CAF50" Foreground="White" BorderThickness="0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                    <TextBox x:Name="txtInput" AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" FontSize="14" Padding="8"
+                             BorderBrush="#E0E0E0" BorderThickness="1"
+                             KeyDown="TxtInput_KeyDown"/>
+                </DockPanel>
+            </Border>
+
+            <!-- SQL 输出区域 -->
+            <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="10"
+                    BorderBrush="#E0E0E0" BorderThickness="1">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📄 SQL 编辑器" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtResultInfo" Foreground="#4CAF50" FontSize="11"
+                                           VerticalAlignment="Center" Margin="12,0,0,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="行数限制:" VerticalAlignment="Center" FontSize="11" Foreground="#757575"/>
+                                <ComboBox x:Name="cmbRowLimit" Height="24" Width="90" Margin="4,0,8,0" FontSize="11"
+                                          SelectionChanged="CmbRowLimit_SelectionChanged">
+                                    <ComboBoxItem Content="100 行" Tag="100"/>
+                                    <ComboBoxItem Content="500 行" Tag="500" IsSelected="True"/>
+                                    <ComboBoxItem Content="1000 行" Tag="1000"/>
+                                    <ComboBoxItem Content="5000 行" Tag="5000"/>
+                                    <ComboBoxItem Content="不限制" Tag="0"/>
+                                </ComboBox>
+                                <Button Content="▶ 执行" x:Name="btnExecute" Click="BtnExecute_Click"
+                                        Height="26" Padding="10,0" FontSize="11"
+                                        Background="#2196F3" Foreground="White" BorderThickness="0"/>
+                                <Button Content="💾 保存" x:Name="btnSaveSql" Click="BtnSaveSql_Click"
+                                        Height="26" Padding="10,0" FontSize="11" Margin="6,0,0,0"
+                                        Background="#9C27B0" Foreground="White" BorderThickness="0"/>
+                                <Button Content="📋 复制" x:Name="btnCopy" Click="BtnCopy_Click"
+                                        Height="26" Padding="10,0" FontSize="11" Margin="6,0,0,0"
+                                        Background="#FF9800" Foreground="White" BorderThickness="0"/>
+                                <Button Content="🗑 清空" x:Name="btnClear" Click="BtnClear_Click"
+                                        Height="26" Padding="10,0" FontSize="11" Margin="6,0,0,0"
+                                        Background="#F44336" Foreground="White" BorderThickness="0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                    <TextBox x:Name="txtOutput" VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="13"
+                             Background="#FAFAFA" Padding="8" BorderBrush="#E0E0E0" BorderThickness="1"
+                             AcceptsReturn="True" TextWrapping="Wrap"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
